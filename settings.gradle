@@ -1,2 +1,2 @@
-include ':app', ':pangooProcessor', ':pangoo-annotation', ':netcore-annatation', ':netcore', ':netcore-processor', ':pangoo-plugin'
+include ':app', ':pangoo-processor', ':pangoo-annotation', ':netcore-annatation', ':netcore', ':netcore-processor', ':pangoo-plugin'
 

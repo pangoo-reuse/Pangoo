@@ -58,5 +58,5 @@ dependencies {
     implementation project(path: ':netcore-annatation')
 
     implementation project(path: ':pangoo-annotation')
-    annotationProcessor project(path: ':pangooProcessor')
+    annotationProcessor project(path: ':pangoo-processor')
 }
