@@ -20,15 +20,15 @@ public class ActivityLogin extends BaseActivity {
   public ActivityLoginBinding activityLoginBinding;
 
   @Override
+  protected void statusBar(Bundle sa) {
+    System.out.println("hello , Pangoo !");
+  }
+
+  @Override
   protected View ui(Bundle sa) {
     activityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
     ActivityLoginViewModel activityLoginViewModel = new ActivityLoginViewModel();
     activityLoginBinding.setViewModel(activityLoginViewModel);
     return null;
-  }
-
-  @Override
-  protected void statusBar(Bundle sa) {
-    System.out.println("hello , Pangoo !");
   }
 }

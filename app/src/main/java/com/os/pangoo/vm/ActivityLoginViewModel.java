@@ -15,13 +15,13 @@ import java.lang.System;
 @ExcludeViewModel
 public final class ActivityLoginViewModel extends BaseViewModel {
   @Override
-  protected BaseActivity mxc(String a, Double b) {
+  protected void m(int a, Double b) {
     System.out.println("hello , Pangoo !");
-    return null;
   }
 
   @Override
-  protected void m(int a, Double b) {
+  protected BaseActivity mxc(String a, Double b) {
     System.out.println("hello , Pangoo !");
+    return null;
   }
 }

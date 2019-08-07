@@ -20,15 +20,15 @@ public class Abc extends BaseActivity {
   public AbcBinding abcBinding;
 
   @Override
+  protected void statusBar(Bundle sa) {
+    System.out.println("hello , Pangoo !");
+  }
+
+  @Override
   protected View ui(Bundle sa) {
     abcBinding = DataBindingUtil.setContentView(this, R.layout.abc);
     AbcViewModel abcViewModel = new AbcViewModel();
     abcBinding.setViewModel(abcViewModel);
     return null;
-  }
-
-  @Override
-  protected void statusBar(Bundle sa) {
-    System.out.println("hello , Pangoo !");
   }
 }
