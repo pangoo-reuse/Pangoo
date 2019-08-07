@@ -1,0 +1,24 @@
+apply from: './../pangoo-plugin-upload.gradle'
+apply plugin: 'groovy'
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'org.apache.commons:commons-io:1.3.2'//javapoet代码生成框架
+    implementation 'com.squareup:javapoet:1.8.0'
+}
+
+repositories {
+    mavenCentral()
+}
+/*
+group = 'com.os.pg.plugin'
+version = '1.0.1'
+
+
+uploadArchives{
+    repositories {
+        mavenDeployer{
+            repository(url: uri('d:/repo'))
+        }
+    }
+}*/

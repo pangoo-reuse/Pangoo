@@ -1,0 +1,16 @@
+apply plugin: 'com.novoda.bintray-release' //添加
+publish {
+    //groupId:moduleName:publishVersion
+    repoName ="maven"
+    userOrg = 'pangoo' //bintray账户下某个组织id
+    groupId = 'com.os.pg' //maven仓库下库的包名，一般为模块包名
+    artifactId = 'netcore-annotation' //项目名称
+    publishVersion = '1.0.7' //版本号
+    desc = 'netcore api annotation for android with rxjava,retrofit,okhttp' //项目介绍，可以不写
+    website = 'https://github.com/pangoo/netcore-annotation'  //项目主页，可以不写
+
+
+
+}
+
+
