@@ -35,7 +35,7 @@ pg {
     sid "src/main/java"
     lid "src/main/res/layout"
     vm "vm"
-    activity "activity"
+    activity "a/activity"
 }
 
 

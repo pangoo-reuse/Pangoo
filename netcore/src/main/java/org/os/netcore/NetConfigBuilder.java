@@ -1,22 +1,23 @@
 package org.os.netcore;
 
+import org.os.netcore.init.Hook;
 import org.os.netcore.init.JsonConvert;
-import org.os.netcore.init.Sign;
+import org.os.netcore.init.SignInterface;
 import org.os.netcore.net.exception.ErrorProcessor;
 import org.os.netcore.net.exception.GlobalException;
-
-import java.util.Map;
+import org.os.netcore.task.NameValuePair;
 
 import okhttp3.OkHttpClient;
 
 public class NetConfigBuilder {
     private OkHttpClient okHttpClient;
-    private Sign sign;
+    private SignInterface signInterface;
     private JsonConvert jsonConvert;
     private ErrorProcessor errorProcessor;
-    private Map<String, Object> commonParams;
+    private NameValuePair<?>[] commonParams;
+    private Hook hook;
 
-    private static NetConfigBuilder ourInstance;
+    private static volatile NetConfigBuilder ourInstance;
 
     public static NetConfigBuilder getInstance() {
         if (ourInstance == null) {
@@ -27,19 +28,28 @@ public class NetConfigBuilder {
         return ourInstance;
     }
 
+    private NetConfigBuilder() {
+    }
+
+    public <D> Hook<D> getHook() {
+        return hook;
+    }
+
+    public <D> NetConfigBuilder setHook(Hook<D> hook) {
+        this.hook = hook;
+        return this;
+    }
+
     public OkHttpClient getOkHttpClient() {
         return okHttpClient;
     }
 
-    public Sign getSignFactory() {
-        return sign;
+    public SignInterface getSignInterface() {
+        return signInterface;
     }
 
-    private NetConfigBuilder() {
-    }
-
-    public NetConfigBuilder setSignFactory(Sign sign) {
-        this.sign = sign;
+    public NetConfigBuilder setSignInterface(SignInterface signInterface) {
+        this.signInterface = signInterface;
         return this;
     }
 
@@ -63,7 +73,7 @@ public class NetConfigBuilder {
     }
 
     public ErrorProcessor getErrorProcessor() {
-        return errorProcessor != null ? errorProcessor: new ErrorProcessor() {
+        return errorProcessor != null ? errorProcessor : new ErrorProcessor() {
             @Override
             public GlobalException processor(Throwable throwable) {
                 return new GlobalException(throwable);
@@ -72,13 +82,13 @@ public class NetConfigBuilder {
     }
 
 
-    public Map<String, Object> getCommonParams() {
+    public NameValuePair<?>[] getCommonParams() {
         return commonParams;
     }
 
-    public NetConfigBuilder setCommonParams(Map<String, Object> commonParams) {
-        this.commonParams = commonParams;
+    public NetConfigBuilder setCommonParams(NameValuePair<?>... params) {
 
+        this.commonParams = params;
         return this;
     }
 

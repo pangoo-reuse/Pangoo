@@ -9,7 +9,6 @@
         <category android:name="android.intent.category.LAUNCHER"/> 
       </intent-filter> 
     </activity>  
-    <activity android:name="com.os.pangoo.activity.ActivityLogin"/>  
-    <activity android:name="com.os.pangoo.activity.Abc"/>
+    <activity android:name="com.os.pangoo.a.activity.ActivityBalance"/>
   </application> 
 </manifest>

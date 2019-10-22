@@ -4,6 +4,7 @@ package org.os.netcore.task;
 import android.text.TextUtils;
 
 import org.os.netcore.NetConfigBuilder;
+import org.os.netcore.init.SignInterface;
 
 import java.io.File;
 import java.net.FileNameMap;
@@ -75,9 +76,17 @@ public class Params {
 
     private void addCommonParams(TreeMap<String, Object> params) {
         if (params != null) {
-            Map<String, Object> commonParams = NetConfigBuilder.getInstance().getCommonParams();
-            if (commonParams != null && !commonParams.isEmpty()) {
-                params.putAll(commonParams);
+            NameValuePair<?>[] pairs = NetConfigBuilder.getInstance().getCommonParams();
+            if (pairs != null && pairs.length > 0) {
+                for (NameValuePair<?> pair : pairs) {
+                    params.put(pair.getName(), pair.getValue());
+                }
+
+            }
+            SignInterface signInterface = NetConfigBuilder.getInstance().getSignInterface();
+            if (signInterface != null) {
+                String sign = signInterface.sign(params);
+                params.put("sign", sign);
             }
 
         }

@@ -36,6 +36,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import javax.swing.text.View;
 
 @AutoService(Processor.class)
 //@SupportedSourceVersion(SourceVersion.RELEASE_7) //指定java版本
@@ -50,6 +51,7 @@ public class InitProcessor extends AbstractProcessor {
     private HashSet<Element> activityAbstractMethodEles;
     private boolean isDatabinding;
     private String packageId;
+
 
 
     @Override
@@ -92,7 +94,7 @@ public class InitProcessor extends AbstractProcessor {
     String sourceDirPath = null;
     String layoutId = null;
     String activityPackageName = null;
-
+     MethodSpec viewModelConstructor;
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         boolean process = false;
@@ -120,6 +122,26 @@ public class InitProcessor extends AbstractProcessor {
                 sourceDirPath = pathConfig.source();
                 layoutId = pathConfig.layout();
                 isDatabinding = pathConfig.databinding();
+                if(viewModelPackageName.contains("/")){
+                    StringBuilder sb = new StringBuilder();
+                    String[] split = viewModelPackageName.split("/");
+                    if (split.length> 0){
+                        for (String sp:split ) {
+                            sb.append(sp).append(".");
+                        }
+                        viewModelPackageName = sb.subSequence(0,sb.length() -1).toString();
+                    }
+                }
+                if(activityPackageName.contains("/")){
+                    StringBuilder sb = new StringBuilder();
+                    String[] split = activityPackageName.split("/");
+                    if (split.length> 0){
+                        for (String sp:split ) {
+                            sb.append(sp).append(".");
+                        }
+                        activityPackageName = sb.subSequence(0,sb.length() -1).toString();
+                    }
+                }
 
 
             }
@@ -131,6 +153,51 @@ public class InitProcessor extends AbstractProcessor {
                 if (enclosedElements != null && enclosedElements.size() > 0) {
 
                     for (Element eee : enclosedElements) {
+                        try {
+                            String name = eee.getKind().name();
+                            if ("CONSTRUCTOR".equalsIgnoreCase(name)){
+                                MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+                                constructorBuilder.addModifiers( eee.getModifiers());
+                                if (eee instanceof  ExecutableElement){
+                                    ExecutableElement executableElement = (ExecutableElement) eee;
+                                    List<? extends VariableElement> parameters = executableElement.getParameters();
+                                    if (parameters != null && parameters.size()>0){
+                                        StringBuilder sb  = new StringBuilder("super(");
+                                        StringBuilder sbv  = new StringBuilder("");
+                                        for (VariableElement ve : parameters) {
+
+                                            ParameterSpec parameterSpec = ParameterSpec.get(ve);
+                                            constructorBuilder.addParameter(parameterSpec);
+                                            sb.append("$N").append(",");
+                                            sbv.append(ve.getSimpleName().toString()).append(",");
+
+                                        }
+                                        StringBuilder rsb = new StringBuilder();
+                                        if (sb.toString().contains(",")){
+                                            rsb.append(sb.substring(0,sb.length()-1));
+                                        }else {
+                                            rsb = sb;
+                                        }
+                                        rsb.append(")");
+                                        if (sbv.length() > 0){
+                                            String[] split = sbv.subSequence(0, sbv.length() - 1).toString().split(",");
+                                            constructorBuilder.addStatement(rsb.toString(),split);
+                                        }else {
+                                            constructorBuilder.addStatement(rsb.toString());
+                                        }
+
+
+                                    }
+
+                                }
+
+                                viewModelConstructor = constructorBuilder.build();
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+
+
                         Set<Modifier> modifierSet = eee.getModifiers();
                         for (Modifier m : modifierSet) {
                             if (m.toString().equalsIgnoreCase("abstract"))
@@ -194,12 +261,25 @@ public class InitProcessor extends AbstractProcessor {
     }
 
     private void createViewModel(String name) {
+
+
         TypeSpec.Builder builder = TypeSpec.classBuilder(name)
                 .superclass(rootViewModelName)
                 .addAnnotation(ExcludeViewModel.class)
                 .addJavadoc(CodeBlock.builder().addStatement("this is autoExclude class ,please dont delete inject 'ExcludeViewModel'").build())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+
         builder.addMethods(getAbstractMethods(viewModelAbstractMethodEles));
+
+        /*
+          public AbcdeViewModel(TextView tv) {
+            super(tv);
+          }
+         */
+        if (viewModelConstructor != null){
+            builder.addMethod(viewModelConstructor);
+        }
+
         TypeSpec rootClassBuilder = builder.build();
 
         try {
@@ -340,6 +420,9 @@ public class InitProcessor extends AbstractProcessor {
                         ClassName viewModelBinding = ClassName.get(packageId.concat(".").concat("databinding"), activityName.concat("Binding"));
                         classBuilder.addField(viewModelBinding, bindingName, Modifier.PUBLIC);
 
+
+
+
                         ClassName R = ClassName.get(packageId, "R");
                         ClassName dataBindingUtil = ClassName.get("androidx.databinding", "DataBindingUtil");
                         //acBinding = DataBindingUtil.setContentView(this, R.layout.ac);
@@ -351,14 +434,18 @@ public class InitProcessor extends AbstractProcessor {
                         //addStatement("$T bundle = new $T()",bundle)
                         String viewModelRealName = Util.toField(viewModelName);
                         ClassName viewModel = ClassName.get(packageId.concat(".").concat(viewModelPackageName), viewModelName);
-                        builder.addStatement("$T $N = new $T()", viewModel, viewModelRealName, viewModel);
+                        //private ActivityLoginViewModel activityLoginViewModel;
+                        classBuilder.addField(viewModel, viewModelRealName, Modifier.PRIVATE);
+
+                        builder.addStatement("$N = new $T()", viewModelRealName, viewModel);
 //                    abcViewModel AbcViewModel = new abcViewModel;
 //                    acBinding.setViewModel(acViewModel);
                         builder.addStatement("$N.setViewModel($N)", bindingName, viewModelRealName);
 
-
+                        //import android.view.View;
                         if (!"void".equalsIgnoreCase(typeName.toString())) {
-                            builder.addStatement("return null");
+                            //activityLoginBinding.getRoot()
+                            builder.addStatement("return $N.getRoot()",bindingName);
                         }
 
 

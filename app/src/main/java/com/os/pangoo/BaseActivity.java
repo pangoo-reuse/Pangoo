@@ -4,13 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.os.lib.RootActivity;
 import com.os.lib.SuperLayoutMethod;
 
 @RootActivity
 public abstract class BaseActivity extends AppCompatActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,4 +21,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract View ui(Bundle sa);
 
     protected abstract void statusBar(Bundle sa);
+
+
 }

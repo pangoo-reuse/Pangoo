@@ -2,6 +2,7 @@ package org.os.netcore.net;
 
 
 import org.os.netcore.NetConfigBuilder;
+import org.os.netcore.init.Hook;
 import org.os.netcore.init.NetRequestListener;
 import org.os.netcore.net.exception.ErrorProcessor;
 import org.os.netcore.net.exception.GlobalException;
@@ -46,13 +47,20 @@ public class HttpFactory {
                             if (errorProcessor == null) {
                                 requestListener.onRequestError(new GlobalException(e));
                             } else requestListener.onRequestError(errorProcessor.processor(e));
-
+                            requestListener.onRequestCompleted();
                         }
                     }
 
                     @Override
                     public void onNext(D data) {
-                        if (requestListener != null) requestListener.onRequestSucceeded(data);
+                        Hook<D> hook = NetConfigBuilder.getInstance().getHook();
+                        boolean next = true;
+                        if (hook != null) {
+                            next = hook.hook(data);
+                        }
+
+                        if (next && requestListener != null)
+                            requestListener.onRequestSucceeded(data);
                     }
                 });
     }

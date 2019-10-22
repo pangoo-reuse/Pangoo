@@ -7,6 +7,10 @@ public final class GlobalException {
 
     private int errorCode;
 
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
     public int getErrorCode() {
         return errorCode;
     }

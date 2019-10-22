@@ -4,11 +4,11 @@ package com.os.pangoo.config;
 import com.os.lib.Pangoo;
 
 @Pangoo(
-    source = "C:\\Users\\xiongyong\\Downloads\\Pangoo\\src\\main\\java",
+    source = "D:\\project\\Pangoo\\src\\main\\java",
     vm = "vm",
-    activity = "activity",
+    activity = "a/activity",
     pkg = "com.os.pangoo",
-    layout = "C:\\Users\\xiongyong\\Downloads\\Pangoo\\src\\main\\res\\layout"
+    layout = "D:\\project\\Pangoo\\src\\main\\res\\layout"
 )
 public interface PangooConfig {
 }
